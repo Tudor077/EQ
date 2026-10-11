@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EQ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top card">
+    <div class="lock">eq<span>(app)</span></div>
+    <button class="power on" id="power" title="Ctrl+Alt+0">On</button>
+    <div class="presets" id="presets"></div>
+    <div class="spacer"></div>
+    <div class="readout pre">
+      <div class="mono">Preamp</div>
+      <div class="prerow"><div class="dot" id="preamp">0.0</div><button class="pill small" id="autopre" title="Auto preamp: lowers the volume by exactly the highest boost, so nothing clips">Auto</button></div>
+    </div>
+    <div class="sep"></div>
+    <div class="readout dev">
+      <div class="mono">Output</div>
+      <div id="device">-</div>
+    </div>
+  </header>
+
+  <main class="graph card">
+    <canvas id="cv"></canvas>
+    <div class="hint mono">Double-click: new band · drag: frequency and gain · wheel: width · right-click: type · Del: remove</div>
+    <div class="warn" id="warn" hidden></div>
+    <div class="devwarn" id="devwarn" hidden>Equalizer APO isn't installed on <b id="devname"></b>, so the EQ isn't heard on this output. Tick it in Device Selector and restart the PC.<button class="pill" id="opensel">Open Device Selector</button></div>
+  </main>
+
+  <section class="band card" id="bandpanel">
+    <div class="bands" id="bandchips"></div>
+    <div class="editor" id="editor">
+      <div class="types" id="types"></div>
+      <label><span class="mono">Frequency</span><input id="f" type="number" min="10" max="22000" step="1"><em>Hz</em></label>
+      <label><span class="mono">Gain</span><input id="g" type="number" min="-24" max="24" step="0.1"><em>dB</em></label>
+      <label><span class="mono">Q</span><input id="q" type="number" min="0.1" max="24" step="0.01"></label>
+      <button class="pill" id="bon">On</button>
+      <button class="pill danger" id="bdel">Remove</button>
+    </div>
+    <div class="empty mono" id="noband">No band selected - double-click the graph to add one</div>
+  </section>
+
+  <aside class="side">
+    <div class="card panel">
+      <div class="ph"><span class="mono">Headphones · AutoEQ</span><button class="pill" id="aeon">Off</button></div>
+      <div class="ae-cur" id="aecur">No correction</div>
+      <input id="aeq" placeholder="Search your model, e.g. HyperX Cloud III" autocomplete="off">
+      <div class="results" id="aeres"></div>
+    </div>
+
+    <div class="card panel">
+      <div class="ph"><span class="mono">Effects</span></div>
+      <div class="row"><span>Loudness</span><button class="pill" id="loud">Off</button></div>
+      <div class="sub">Fuller bass and treble at low volume</div>
+      <div class="row"><span>Crossfeed</span><span class="dot small" id="xfv">0</span></div>
+      <input type="range" id="xf" min="0" max="100" step="1" value="0">
+      <div class="sub">Headphones sound like speakers, not inside your head</div>
+    </div>
+
+    <div class="card panel">
+      <div class="ph"><span class="mono">Per app</span><button class="pill" id="auto">Auto</button></div>
+      <div class="rules" id="rules"></div>
+      <div class="fg">In front now: <b id="fg">-</b> <button class="pill" id="addfg">Add</button></div>
+      <div class="row"><span>Default</span><select id="base"></select></div>
+    </div>
+
+    <div class="card panel">
+      <div class="ph"><span class="mono">Preset</span></div>
+      <div class="btnrow">
+        <button class="pill" id="psave" title="Ctrl+S">Save</button>
+        <button class="pill" id="psaveas" title="Ctrl+Shift+S">Save as…</button>
+        <button class="pill" id="prevert" hidden>Discard</button>
+      </div>
+      <div class="pstate" id="pstate"></div>
+      <div class="btnrow">
+        <button class="pill" id="pren">Rename</button>
+        <button class="pill danger" id="pdel">Delete</button>
+      </div>
+      <div class="btnrow">
+        <button class="pill" id="pexp" title="Every preset, the app rules and the headphone profile, in one file">Export…</button>
+        <button class="pill" id="pimp" title="Add presets from a file; nothing is overwritten">Import…</button>
+      </div>
+      <div class="sub">Ctrl+Alt+1…9 switch presets, Ctrl+Alt+0 turns the EQ on/off</div>
+    </div>
+  </aside>
+</div>
+
+<dialog id="dlg"><form method="dialog"><div class="mono" id="dlgt">Name</div><input id="dlgi" maxlength="32"><div class="err" id="dlge"></div><div class="btnrow"><button class="pill" value="cancel" formnovalidate>Cancel</button><button class="pill on" id="dlgok" value="ok">OK</button></div></form></dialog>
+<div class="menu" id="menu" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+pywebview>=5
+pyaudiowpatch
+pycaw
+comtypes
+numpy
+psutil
+pywin32
+Pillow  # build.py only, for the icon
+pyinstaller  # build.py only

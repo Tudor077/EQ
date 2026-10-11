@@ -1,0 +1,10 @@
+__pycache__/
+dist/
+build/
+*.spec
+# The Nothing typefaces belong to Nothing and are not redistributable.
+# Put your own copies in %APPDATA%\EQ\fonts (see web/fonts/README.md).
+web/fonts/*.woff2
+web/fonts/*.woff
+web/fonts/*.otf
+web/fonts/*.ttf
