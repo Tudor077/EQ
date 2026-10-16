@@ -63,6 +63,11 @@ Equalizer APO → Device Selector), and needs a restart after a change there.
   preset switches by itself when that app comes to the front, and goes back to
   *Default* otherwise.
 - **Hotkeys**: Ctrl+Alt+1..9 = presets in order, Ctrl+Alt+0 = bypass.
+- **Tray and start with Windows**: closing the window hides it to the tray;
+  per-app switching, hotkeys and loudness keep running. The tray menu has
+  Open, Bypass, *Start with Windows* and Quit. Starting with Windows puts an
+  `EQ.lnk` in your Startup folder that runs `EQ.exe --hidden` - straight to
+  the tray (`python autostart.py on | off | status` does the same).
 
 ## Checked, not assumed
 
@@ -80,21 +85,22 @@ the output.
 | `app.py` | the window (pywebview) and the API the page calls |
 | `engine.py` | state, presets, per-app switching, hotkeys |
 | `apo.py` | the APO config language, plus the filter maths the UI also uses |
+| `tray.py`, `autostart.py`, `icon.py` | tray icon, the Startup shortcut, the icon drawing |
 | `spectrum.py` | WASAPI loopback analyser (pyaudiowpatch) |
 | `autoeq.py` | AutoEQ index and profiles, cached in `%APPDATA%\EQ\autoeq` |
 | `web/` | the UI; opened as a plain page it runs on a mock, for working on it without touching the sound |
 
 Settings and presets: `%APPDATA%\EQ\state.json`, with a copy at most every
-10 minutes in `%APPDATA%\EQackups` (last 30 kept), and **Exportă / Importă**
+10 minutes in `%APPDATA%\EQ\backups` (last 30 kept), and **Exportă / Importă**
 in the preset panel for a file of your own. Import never overwrites: a taken
 name gets " (2)".
 
-One copy at a time: starting it again brings the open window to the front.
-`python app.py --replace` closes the running one properly (it saves on the way
+One copy at a time: starting it again shows the running one's window, even
+from the tray. `EQ.exe --replace` (or `python app.py --replace`) closes the running one properly (it saves on the way
 out) and takes over - use that, not killing the process, to restart it.
 
 Not done yet: a limiter and dynamic bass boost need real dynamics processing,
-which APO only offers through VST plugins; tray icon.
+which APO only offers through VST plugins.
 
 The look follows the Nothing brand reference, but the Nothing fonts aren't
 shipped - see `web/fonts/README.md`.

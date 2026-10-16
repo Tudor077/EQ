@@ -94,6 +94,15 @@ class Api:
     def autoeq_clear(self):
         self._e.set_autoeq(None)
 
+    # start with Windows
+    def autostart_get(self):
+        import autostart
+        return autostart.is_enabled()
+
+    def autostart_set(self, on):
+        import autostart
+        return autostart.set(bool(on))
+
     def open_apo_selector(self):
         """APO's own device picker - which outputs the EQ applies to."""
         engine.apo.open_device_selector()
@@ -123,35 +132,57 @@ class Api:
 
 
 MUTEX = r"Local\EQApp.single-instance"
+EV_SHOW = r"Local\EQApp.show"            # "bring the window up" from a second start
+EV_QUIT = r"Local\EQApp.quit"            # "save and exit" from --replace
 TITLE = "EQ"
+
+
+def _event(name):
+    import ctypes
+    k32 = ctypes.windll.kernel32
+    k32.CreateEventW.restype = ctypes.c_void_p
+    return k32.CreateEventW(None, False, False, name)       # auto-reset
 
 
 def one_instance():
     """Only one EQ at a time - two of them each hold the presets in memory and
     the last to save wins, which is how a whole set of presets got lost once.
 
-    A second start brings the running window to the front and exits.
-    `--replace` instead asks the running one to close (WM_CLOSE, so it saves
-    on the way out), waits for it, and takes over - for restarting from a
-    script without killing the user's window.
+    A second start asks the running one to show its window and exits (the
+    window may be hidden in the tray, so a plain "bring to front" isn't
+    enough). `--replace` asks the running one to quit - it saves on the way
+    out - waits for it, and takes over: for restarting from a script without
+    killing the user's EQ.
     """
     import ctypes
-    k32, u32 = ctypes.windll.kernel32, ctypes.windll.user32
+    k32 = ctypes.windll.kernel32
     k32.CreateMutexW.restype = ctypes.c_void_p
     h = k32.CreateMutexW(None, True, MUTEX)
     if k32.GetLastError() != 183:                      # ERROR_ALREADY_EXISTS
         return h
-    hwnd = u32.FindWindowW(None, TITLE)
     if "--replace" not in sys.argv:
-        if hwnd:
-            u32.ShowWindow(hwnd, 9)                    # SW_RESTORE
-            u32.SetForegroundWindow(hwnd)
+        k32.SetEvent(ctypes.c_void_p(_event(EV_SHOW)))
         sys.exit(0)
-    if hwnd:
-        u32.PostMessageW(hwnd, 0x0010, 0, 0)           # WM_CLOSE
+    k32.SetEvent(ctypes.c_void_p(_event(EV_QUIT)))
     if k32.WaitForSingleObject(ctypes.c_void_p(h), 10000) not in (0, 0x80):
         sys.exit("the running EQ did not close")
     return h
+
+
+def _watch(name, fn):
+    """Call fn whenever another process signals the named event."""
+    import ctypes
+    k32 = ctypes.windll.kernel32
+    ev = ctypes.c_void_p(_event(name))
+
+    def loop():
+        while True:
+            if k32.WaitForSingleObject(ev, 0xFFFFFFFF) == 0:
+                try:
+                    fn()
+                except Exception:
+                    pass
+    threading.Thread(target=loop, daemon=True).start()
 
 
 FONTS = ("NType82-Headline.woff2", "NType82-Regular.woff2", "NType82Mono-Regular.woff2", "NDot-55.otf")
@@ -180,6 +211,7 @@ def bring_fonts():
 def main():
     _mutex = one_instance()                            # held until we exit
     bring_fonts()
+    hidden = "--hidden" in sys.argv                    # started at logon: straight to the tray
     api_box = {}
 
     def log(msg):
@@ -188,15 +220,57 @@ def main():
 
     eng = engine.Engine(log=log)
     spec = spectrum.Spectrum()
+    spec.active = not hidden                           # no FFT while nobody looks at it
     spec.start()
     api = Api(eng, spec)
     api_box["api"] = api
 
     win = webview.create_window(TITLE, os.path.join(WEB, "index.html"), js_api=api,
                                 width=1360, height=860, min_size=(1100, 720),
-                                background_color="#000000")
+                                background_color="#000000", hidden=hidden)
     api._win = win
-    win.events.closed += lambda: (spec.stop(), eng.close())
+    quitting = {"now": False}
+
+    def show():
+        spec.active = True
+        win.show()
+        win.restore()
+
+    def quit_all():
+        quitting["now"] = True
+        win.destroy()
+
+    def on_closing():
+        # the X hides to the tray when there is one; Quit in the tray really quits
+        if quitting["now"] or tray is None:
+            return True
+        spec.active = False
+        win.hide()
+        return False
+
+    tray = None
+    try:
+        import autostart
+        import tray as tray_mod
+
+        def state():
+            st = eng.snapshot()
+            tip = "EQ - " + ("bypassed" if not st["enabled"] else st["active"])
+            return {"enabled": st["enabled"], "autostart": autostart.is_enabled(), "tip": tip}
+
+        def bypass():
+            eng.set("enabled", not eng.s["enabled"])
+
+        tray = tray_mod.Tray({"open": show, "bypass": bypass, "autostart": autostart.set, "quit": quit_all}, state)
+        tray.start()
+        eng.listeners.append(tray.refresh)             # the tip follows preset switches
+    except Exception as e:
+        log(f"tray icon unavailable: {e}")
+
+    _watch(EV_SHOW, show)
+    _watch(EV_QUIT, quit_all)
+    win.events.closing += on_closing
+    win.events.closed += lambda: (spec.stop(), eng.close(), tray and tray.stop())
     webview.start(debug="--debug" in sys.argv)
 
 

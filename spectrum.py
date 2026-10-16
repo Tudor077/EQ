@@ -123,6 +123,8 @@ class Spectrum:
             self._buf[-n:] = x
 
     def _analyse(self):
+        if not getattr(self, "active", True):      # window hidden: keep reading, skip the maths
+            return
         now = time.monotonic()
         if now - getattr(self, "_t", 0) < 1 / 40:          # 40 analyses a second
             return
