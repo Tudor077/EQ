@@ -3,6 +3,10 @@
 A parametric equalizer for the whole of Windows, with per-app presets, live
 spectrum and headphone correction.
 
+There is an Android version too: `EQ.apk` in [Releases](../../releases) runs
+only while headphones are connected. Android 9 or newer; see
+[android/README.md](android/README.md).
+
 ## Install
 
 1. Install **Equalizer APO** (free, open source):

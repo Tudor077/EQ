@@ -1,0 +1,236 @@
+{
+ "order": [
+  "Flat",
+  "Bass",
+  "Voice",
+  "Night",
+  "Cabin",
+  "HyperX",
+  "NEa"
+ ],
+ "presets": {
+  "Flat": {
+   "bands": []
+  },
+  "Bass": {
+   "bands": [
+    {
+     "type": "lowshelf",
+     "freq": 90,
+     "gain": 6,
+     "q": 0.7,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 250,
+     "gain": -1.5,
+     "q": 1.0,
+     "on": true
+    }
+   ]
+  },
+  "Voice": {
+   "bands": [
+    {
+     "type": "lowcut",
+     "freq": 90,
+     "gain": 0,
+     "q": 0.7,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 300,
+     "gain": -2,
+     "q": 1.0,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 3000,
+     "gain": 3,
+     "q": 1.0,
+     "on": true
+    },
+    {
+     "type": "highshelf",
+     "freq": 9000,
+     "gain": -1.5,
+     "q": 0.7,
+     "on": true
+    }
+   ]
+  },
+  "Night": {
+   "bands": [
+    {
+     "type": "lowshelf",
+     "freq": 120,
+     "gain": -3,
+     "q": 0.7,
+     "on": true
+    },
+    {
+     "type": "highshelf",
+     "freq": 6000,
+     "gain": -2,
+     "q": 0.7,
+     "on": true
+    }
+   ]
+  },
+  "Cabin": {
+   "bands": [
+    {
+     "type": "lowcut",
+     "freq": 22,
+     "gain": 0,
+     "q": 0.7,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 55,
+     "gain": 4,
+     "q": 1.2,
+     "on": true
+    },
+    {
+     "type": "lowshelf",
+     "freq": 160,
+     "gain": 3,
+     "q": 0.7,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 900,
+     "gain": -2,
+     "q": 0.9,
+     "on": true
+    },
+    {
+     "type": "highshelf",
+     "freq": 2200,
+     "gain": -9,
+     "q": 0.7,
+     "on": true
+    },
+    {
+     "type": "highcut",
+     "freq": 7000,
+     "gain": 0,
+     "q": 0.7,
+     "on": true
+    }
+   ]
+  },
+  "HyperX": {
+   "bands": [
+    {
+     "type": "bell",
+     "freq": 20,
+     "gain": -2,
+     "q": 1,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 44,
+     "gain": 6.5,
+     "q": 1,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 273.2,
+     "gain": 7,
+     "q": 0.5,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 2025.5,
+     "gain": 6.5,
+     "q": 0.67,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 5790.9,
+     "gain": 4,
+     "q": 0.84,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 18826.6,
+     "gain": 14.2,
+     "q": 0.4,
+     "on": true
+    }
+   ]
+  },
+  "NEa": {
+   "bands": [
+    {
+     "type": "bell",
+     "freq": 20,
+     "gain": -4.5,
+     "q": 0.56,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 60.8,
+     "gain": 8.5,
+     "q": 1,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 101.6,
+     "gain": 2.3,
+     "q": 1,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 265,
+     "gain": 5.2,
+     "q": 2.23,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 618.4,
+     "gain": 4.6,
+     "q": 1.13,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 2071.7,
+     "gain": 5.4,
+     "q": 1.01,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 5534.1,
+     "gain": 6,
+     "q": 0.8,
+     "on": true
+    },
+    {
+     "type": "bell",
+     "freq": 18403.6,
+     "gain": 16.4,
+     "q": 0.24,
+     "on": true
+    }
+   ]
+  }
+ }
+}
